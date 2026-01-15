@@ -1,7 +1,7 @@
 services:
   acbot:
     container_name: acbot
-    image: acbot:latest
+    image: "ghcr.io/gurase/acbot:main"
     environment:
       - DISCORD_TOKEN=YOUR DISCORD TOKEN HERE
       - CHANNEL_ID=YOUR CHANNEL ID HERE
