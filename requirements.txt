@@ -1,5 +1,5 @@
 discord.py
-python-env
+python-dotenv
 aiocron
 requests
 beautifulsoup4
