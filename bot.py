@@ -154,6 +154,26 @@ async def sharkie(command):
     await command.send("90 percent of gamblers....")
 
 @bot.command()
+async def justin(command):
+    await command.send("STAMPS")
+
+@bot.command()
+async def charlene(command):
+    await command.send("The Storyteller")
+
+@bot.command()
+async def tami(command):
+    await command.send("RUN TAMI RUN")
+
+@bot.command()
+async def ash(command):
+    await command.send("Thunder from down under")
+
+@bot.command()
+async def maddie(command):
+    await command.send("NT Story Pro")
+
+@bot.command()
 async def mpic(command):
     await command.send("https://www.neopets.com/games/mysterypic.phtml, this should ping maybe idk :carol:")
 
@@ -220,7 +240,13 @@ async def turmy_messages():
     )
     embedding.set_image(url="https://images.neopets.com/new_shopkeepers/939.gif")
 
+    print("Pinging turmy role at what should be: ", turmac_times[0].strftime("%b-%d %H:%M"))
+    print("The current time is actually: ", datetime.datetime.now(pst).strftime("%b-%d %H:%M"))
+    print("The current turmy times list is: ", turmac_times)
+
     turmac_times = [time for time in turmac_times if time > datetime.datetime.now(pst)] #i think this should work....? keeps only times bigger than now? eh i can just .tw to check, surely its fine :clueless:
+
+    print("New turmy times list: ", turmac_times)
 
     await channel.send(f"<@&{int(turmy_id)}>", embed=embedding)
 
