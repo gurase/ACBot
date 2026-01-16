@@ -3,3 +3,4 @@ python-dotenv
 aiocron
 requests
 beautifulsoup4
+python-dateutil

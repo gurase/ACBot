@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import datetime
 from zoneinfo import ZoneInfo
+from dateutil import parser
 
 #Load env variables
 load_dotenv()
@@ -43,26 +44,41 @@ async def on_ready():
     #await channel.send("Hi guys, I'm online!")
     
 #func to parse brownhownd times
-def brown_to_time(dateslist):
-    dates = []
-    for date in dateslist:
-
-        all = date.split(": ")
-        a = all[0] #just the date, no time
+def brown_to_time(datesString):
+    
+    datesList = [date for date in datesString.split("\n") if date]
+    datesToReturn = []
+    
+    print(datesList)
+    
+    for date in datesList:
 
         if "Awake" in date: #kill "awake" times
             continue
 
-        times = [i for i in all[1].strip(" NST").split(" ") if i not in ("or", "OR")] #readable code is for CHUMPS
-        for time in times:
-            dateandtime = a + " " + time
+        IsANewDate = False
 
-            dateobject = datetime.datetime.strptime(dateandtime, date_format)
+        dateSplat = date.split(": ")
+
+        if "or" not in dateSplat[0]:#this way the date is only overwritten if its new
+            IsANewDate = True
+            day = dateSplat[0] #just year, month and day data, no time
+
+        if IsANewDate:#if its a new date, do the thing to the second element of dateSplat
+            times = [i for i in dateSplat[1].strip(" NST").split(" ") if i not in ("or", "OR")] #readable code is for CHUMPS
+
+        elif not IsANewDate:#if its not new, do the thing to the first element
+            times = [i for i in dateSplat[0].strip(" NST").split(" ") if i not in ("or", "OR")]
+        
+        for time in times:
+            dateandtime = day + " " + time
+
+            dateobject = parser.parse(dateandtime)
             dateobject = dateobject.replace(tzinfo=pst)
             
-            dates.append(dateobject)
-        
-    if dates: return dates
+            datesToReturn.append(dateobject)
+            
+    if datesToReturn: return datesToReturn
     else: return -1
 
 def times_print(times):
@@ -81,7 +97,8 @@ async def help(command):
     \n* **turmytimes**: This one's used to send the turmaculus times in the same format as [Brownhownd](https://www.neopets.com/~Brownhownd) (you can also use .tt)
     \n* **turmywhen**: You can use this one to know how many wake-up times are left in the queue! (you can also use .tw)
     \n* **igloo**: This ones doesn't ping anyone atm, but it links to igloo! Useful to anounce it's stocked! (yadda yadda .i)
-    \n* **ping**: It's a ping! You know, [A Ping](https://en.wikipedia.org/wiki/Ping_(networking_utility))""",
+    \n* **ping**: It's a ping! You know, [A Ping](https://en.wikipedia.org/wiki/Ping_(networking_utility))
+    \n* Also, there may be a couple secrets (but it's a secret!).""",
     color=0xFA903E
     )
     await command.send(embed=embedding)
@@ -90,12 +107,39 @@ async def help(command):
 async def ping(command):
     await command.send("Pong")
 
+@bot.command()
+async def hero(command):
+    await command.send("Rich")
+
+@bot.command()
+async def connie(command):
+    await command.send("Pro")
+
+@bot.command()
+async def sweet(command):
+    await command.send("Goat")
+
+@bot.command()
+async def liz(command):
+    await command.send("Pro")
+
+@bot.command()
+async def hero(command):
+    await command.send("Rich")
+
+@bot.command()
+async def mpic(command):
+    await command.send("https://www.neopets.com/games/mysterypic.phtml, this should ping maybe idk :carol:")
+
+@bot.command(aliases=["ag"])
+async def artgallery(command):
+    await command.send("https://www.neopets.com/art/gallery.phtml")
+
 @bot.command(aliases=["tt"])
 async def turmytimes(ctx, *, arg):
 
     global turmac_times
 
-    arg = [item for item in arg.split("\n") if item] #remove empty lines from list of times 
     turmac_times = brown_to_time(arg)
     channel = bot.get_channel(channel_id)
     
