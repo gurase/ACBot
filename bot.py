@@ -138,6 +138,22 @@ async def liz(command):
     await command.send("Pro")
 
 @bot.command()
+async def lupana(command):
+    await command.send("Certified Pharmacy Pro")
+
+@bot.command()
+async def lee(command):
+    await command.send("Expert at www.neopets.com")
+
+@bot.command()
+async def toto(command):
+    await command.send("Most Readable Code Writer")
+
+@bot.command()
+async def sharkie(command):
+    await command.send("90 percent of gamblers....")
+
+@bot.command()
 async def mpic(command):
     await command.send("https://www.neopets.com/games/mysterypic.phtml, this should ping maybe idk :carol:")
 
