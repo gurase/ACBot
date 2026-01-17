@@ -39,7 +39,7 @@ bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 async def on_ready():
     print(f"Hiya! {bot.user.name}")
     snowy_messages.start()
-    turmy_messages.start()
+    #turmy_messages.start()
     #channel = bot.get_channel(channel_id)
     #await channel.send("Hi guys, I'm online!")
     
@@ -96,6 +96,7 @@ async def help(command):
     description="""* **help**: You already know this one! A handy shorthand is using **.h**!
     \n* **turmytimes**: This one's used to send the turmaculus times in the same format as [Brownhownd](https://www.neopets.com/~Brownhownd) (you can also use .tt)
     \n* **turmywhen**: You can use this one to know how many wake-up times are left in the queue! (you can also use .tw)
+    \n* **turmac**: This one pings everyone with the turmac role! (you can also use .turmy or .t)
     \n* **igloo**: This ones doesn't ping anyone atm, but it links to igloo! Useful to anounce it's stocked! (yadda yadda .i)
     \n* **ping**: It's a ping! You know, [A Ping](https://en.wikipedia.org/wiki/Ping_(networking_utility))
     \n* **mpic**: Links to Mystery Pic! Because why not.
@@ -174,6 +175,10 @@ async def maddie(command):
     await command.send("NT Story Pro")
 
 @bot.command()
+async def coco(command):
+    await command.send("BOSTON")
+
+@bot.command()
 async def mpic(command):
     await command.send("https://www.neopets.com/games/mysterypic.phtml, this should ping maybe idk :carol:")
 
@@ -203,9 +208,9 @@ async def turmytimes(ctx, *, arg):
 async def turmywhen(command):
     await command.send(f"Hi There!\n\nThe Currently Stored Turmy Times Are:{times_print(turmac_times)}")
 
-# @bot.command(aliases=["turmy", "t"])
-# async def turmac(command):
-#     await command.send(f"Wow {command.author.mention}, you sure he's awake?\nOh well, not my problem\n<@&{int(turmy_id)}> !")
+@bot.command(aliases=["turmy", "t"])
+async def turmac(command):
+    await command.send(f"Wow {command.author.mention}, you sure he's awake?\nOh well, not my problem\n<@&{int(turmy_id)}> !")
 
 @bot.command(aliases=["i"])#oh gosh i sure am being nice with this one aw shucks aw hope they use it and that uhhhhhhhh they give me a quadrillion dallas texas cowboys
 async def igloo(command):
@@ -225,29 +230,29 @@ async def snowy_messages():
 
     await channel.send(f"<@&{int(snowy_id)}>", embed=embedding)
 
-@tasks.loop(time=turmac_times)
-async def turmy_messages():
+# @tasks.loop(time=turmac_times)
+# async def turmy_messages():
 
-    global turmac_times
+#     global turmac_times
 
-    channel = bot.get_channel(channel_id)    
+#     channel = bot.get_channel(channel_id)    
 
-    embedding = discord.Embed(
-    title="The Turmaculus Could Be Asleep! ༘ 🦕𖦹⋆｡˚", 
-    url="https://www.neopets.com/medieval/turmaculus.phtml", 
-    description="NOW LISTEN HERE YOU ROLY POLY MOTHERFUCKER",
-    color=0x996699
-    )
-    embedding.set_image(url="https://images.neopets.com/new_shopkeepers/939.gif")
+#     embedding = discord.Embed(
+#     title="The Turmaculus Could Be Asleep! ༘ 🦕𖦹⋆｡˚", 
+#     url="https://www.neopets.com/medieval/turmaculus.phtml", 
+#     description="NOW LISTEN HERE YOU ROLY POLY MOTHERFUCKER",
+#     color=0x996699
+#     )
+#     embedding.set_image(url="https://images.neopets.com/new_shopkeepers/939.gif")
 
-    print("Pinging turmy role at what should be: ", turmac_times[0].strftime("%b-%d %H:%M"))
-    print("The current time is actually: ", datetime.datetime.now(pst).strftime("%b-%d %H:%M"))
-    print("The current turmy times list is: ", turmac_times)
+#     print("Pinging turmy role at what should be: ", turmac_times[0].strftime("%b-%d %H:%M"))
+#     print("The current time is actually: ", datetime.datetime.now(pst).strftime("%b-%d %H:%M"))
+#     print("The current turmy times list is: ", turmac_times)
 
-    turmac_times = [time for time in turmac_times if time > datetime.datetime.now(pst)] #i think this should work....? keeps only times bigger than now? eh i can just .tw to check, surely its fine :clueless:
+#     turmac_times = [time for time in turmac_times if time > datetime.datetime.now(pst)] #i think this should work....? keeps only times bigger than now? eh i can just .tw to check, surely its fine :clueless:
 
-    print("New turmy times list: ", turmac_times)
+#     print("New turmy times list: ", turmac_times)
 
-    await channel.send(f"<@&{int(turmy_id)}>", embed=embedding)
+#     await channel.send(f"<@&{int(turmy_id)}>", embed=embedding)
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)
