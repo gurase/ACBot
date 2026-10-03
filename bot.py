@@ -9,11 +9,17 @@ from dateutil import parser
 
 #Load env variables
 load_dotenv()
+
+#Discord linking
 token = os.getenv('DISCORD_TOKEN')
 channel_id = int(os.getenv('CHANNEL_ID'))
+
+#Roles
 turmy_id = os.getenv('TURMAC_ROLE_ID')
 snowy_id = os.getenv('SNOWAGER_ROLE_ID')
 obelisk_id = os.getenv('OBELISK_ROLE_ID')
+soup_id = os.getenv('SOUP_FAE_ROLE_ID')
+
 date_format = os.getenv('DATE_FORMAT')
 
 #Handle logging 
@@ -31,7 +37,7 @@ obelisk_seed_day = datetime.date(2026, 9, 2) #known obelisk deadline to make you
 obelisk_battle_start = datetime.date(2026, 9, 3) #known obelisk deadline to start battles
 obelisk_battle_deadline = datetime.date(2026, 9, 6) #known obelisk deadline to finish battles
 obelisk_boon_deadline = datetime.date(2026, 9, 7) #known obelisk deadline to choose your boon
-obelisk_pick = "";
+obelisk_pick = ""
 
 # --------------- BOT STARTS HERE ---------------
 
@@ -132,6 +138,21 @@ async def turmac(command):
 async def igloo(command):
     await command.send(f"Hi there {command.author.mention}!\nIgloo is here: https://www.neopets.com/winter/igloo.phtml?stock=1 :)")
 
+@tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=pst))
+async def soup_messages():
+    channel = bot.get_channel(channel_id)
+    
+    embedding = discord.Embed(
+    title="Soup Time Y'all! 🍲🥄", 
+    url="https://www.neopets.com/soupkitchen.phtml", 
+    description=f"Remember! Minimum of 25k if you're cheap like me :^)",
+    color=0xffe92a
+    )
+    embedding.set_image(url="https://images.neopets.com/soupkitchen/images/soup-kitchen-banner.png")
+
+    await channel.send(f"<@&{int(soup_id)}>", embed=embedding)
+
+
 @tasks.loop(time=snowy_times)
 async def snowy_messages():
     channel = bot.get_channel(channel_id)
@@ -182,7 +203,7 @@ async def obelisk_messages():
         embedding = discord.Embed(
         title="Time to pick a faction!!", 
         url="https://www.neopets.com/prehistoric/battleground/", 
-        description=f"Do we even know who the pick is <Clueless:1534993720372625539>",
+        description=f"Do we even know who the pick is <:Clueless:1534993720372625539>",
         color=0xf3f1d4
         )
         embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
@@ -321,7 +342,7 @@ async def amii(command):
 
 @bot.command()
 async def mpic(command):
-    await command.send("https://www.neopets.com/games/mysterypic.phtml, this should ping maybe idk :carol:")
+    await command.send('https://www.neopets.com/games/mysterypic.phtml, this should ping maybe idk <:carol:1419684583766622259>')
 
 @bot.command(aliases=["ag"])
 async def artgallery(command):
