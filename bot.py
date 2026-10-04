@@ -194,6 +194,39 @@ async def turmy_messages():
 
     await channel.send(f"<@&{int(turmy_id)}>", embed=embedding)
 
+# selector for pinging when the guild picks an obelisk faction
+class SelectView(discord.ui.View):
+    @discord.ui.select(
+        placeholder="Who did the guild pick?",
+        min_values=1,
+        max_values=1,
+        options=[
+            discord.SelectOption(label="Awakened", description="Awakened"),
+            discord.SelectOption(label="Brutes", description="Brute Squad"),
+            discord.SelectOption(label="Order", description="Order of the Red Erisim"),
+            discord.SelectOption(label="Seekers", description="Seekers"),
+            discord.SelectOption(label="Sway", description="Sway"),
+            discord.SelectOption(label="Thieves", description="Thieves Guild")
+        ]
+    )
+    async def select_callback(self, select, interaction):
+        await interaction.response.send_message(f"You selected: {select.values[0]}")
+
+@bot.command(aliases=["obelisk"])
+async def obelisk_pick(ctx):
+    await ctx.send("Pick an option:", view=SelectView())
+
+    channel = bot.get_channel(channel_id)
+    embedding = discord.Embed(
+        title="Who did the guild pick?", 
+        url="https://www.neopets.com/prehistoric/battleground/", 
+        description=f"Select who the guild picked from the options below",
+        color=0xf3f1d4
+        )
+    embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
+    
+    await channel.send(f"<@&{int(obelisk_id)}>",embed=embedding)
+
 @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=pst))
 async def obelisk_messages():
     channel = bot.get_channel(channel_id)
