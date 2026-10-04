@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 import logging.handlers
 from dotenv import load_dotenv
 import os
+import json
 import datetime
 from zoneinfo import ZoneInfo
 from dateutil import parser
@@ -37,7 +38,21 @@ obelisk_seed_day = datetime.date(2026, 9, 2) #known obelisk deadline to make you
 obelisk_battle_start = datetime.date(2026, 9, 3) #known obelisk deadline to start battles
 obelisk_battle_deadline = datetime.date(2026, 9, 6) #known obelisk deadline to finish battles
 obelisk_boon_deadline = datetime.date(2026, 9, 7) #known obelisk deadline to choose your boon
-obelisk_pick = ""
+obelisk_pick_file = "obelisk_pick.json" #so the pick survives restarts
+
+def load_obelisk_pick():
+    try:
+        with open(obelisk_pick_file, encoding="utf-8") as f:
+            data = json.load(f)
+        return data["pick"], data["user_id"]
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        return "", 0
+
+def save_obelisk_pick(pick, user_id):
+    with open(obelisk_pick_file, "w", encoding="utf-8") as f:
+        json.dump({"pick": pick, "user_id": user_id}, f)
+
+current_obelisk_pick, current_obelisk_picker = load_obelisk_pick() #the faction the guild picked this round and the id of who picked it, cleared at the boon ping
 
 # --------------- BOT STARTS HERE ---------------
 
@@ -209,26 +224,39 @@ class SelectView(discord.ui.View):
             discord.SelectOption(label="Thieves", description="Thieves Guild")
         ]
     )
-    async def select_callback(self, select, interaction):
-        await interaction.response.send_message(f"You selected: {select.values[0]}")
+    async def select_callback(self, interaction, select):
+        global current_obelisk_pick, current_obelisk_picker
+
+        current_obelisk_pick = select.values[0]
+        current_obelisk_picker = interaction.user.id
+        save_obelisk_pick(current_obelisk_pick, current_obelisk_picker)
+
+        embedding = discord.Embed(
+            title=f"The guild picked {current_obelisk_pick}!",
+            url="https://www.neopets.com/prehistoric/battleground/",
+            description=f"Picked by <@{current_obelisk_picker}>",
+            color=0xf3f1d4
+            )
+        embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
+
+        await interaction.response.send_message(f"<@&{int(obelisk_id)}>", embed=embedding)
+
+class ChangePickView(discord.ui.View):
+    @discord.ui.button(label="Change pick", style=discord.ButtonStyle.primary)
+    async def change_callback(self, interaction, button):
+        await interaction.response.send_message("Who did the guild pick?", view=SelectView(), ephemeral=True)
 
 @bot.command(aliases=["obelisk"])
 async def obelisk_pick(ctx):
-    await ctx.send("Pick an option:", view=SelectView())
-
-    channel = bot.get_channel(channel_id)
-    embedding = discord.Embed(
-        title="Who did the guild pick?", 
-        url="https://www.neopets.com/prehistoric/battleground/", 
-        description=f"Select who the guild picked from the options below",
-        color=0xf3f1d4
-        )
-    embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
-    
-    await channel.send(f"<@&{int(obelisk_id)}>",embed=embedding)
+    if current_obelisk_pick:
+        await ctx.send(f"The guild's pick is **{current_obelisk_pick}**, picked by <@{current_obelisk_picker}>.", view=ChangePickView())
+    else:
+        await ctx.send("Who did the guild pick?", view=SelectView())
 
 @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=pst))
 async def obelisk_messages():
+    global current_obelisk_pick, current_obelisk_picker
+
     channel = bot.get_channel(channel_id)
 
     # pick faction
@@ -266,6 +294,9 @@ async def obelisk_messages():
         await channel.send(f"<@&{int(obelisk_id)}>",embed=embedding)
     # choose boon
     elif (datetime.datetime.now(pst).date() - obelisk_boon_deadline).days % 14 == 0:
+        current_obelisk_pick, current_obelisk_picker = "", 0 # new round coming, clear the old pick
+        save_obelisk_pick(current_obelisk_pick, current_obelisk_picker)
+
         embedding = discord.Embed(
         title="Time to choose your boon!!", 
         url="https://www.neopets.com/prehistoric/battleground/", 
