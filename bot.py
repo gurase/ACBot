@@ -52,9 +52,9 @@ bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 @bot.event
 async def on_ready():
     print(f"Hiya! {bot.user.name}")
-    snowy_messages.start()
-    turmy_messages.start()
-    obelisk_messages.start()
+    for loop in (snowy_messages, turmy_messages, obelisk_messages, soup_messages):
+        if not loop.is_running():
+            loop.start()
 
     #channel = bot.get_channel(channel_id)
     #await channel.send("Hi guys, I'm online!")
