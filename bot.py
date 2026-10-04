@@ -231,6 +231,8 @@ class SelectView(discord.ui.View):
         current_obelisk_picker = interaction.user.id
         save_obelisk_pick(current_obelisk_pick, current_obelisk_picker)
 
+        channel = bot.get_channel(channel_id)
+
         embedding = discord.Embed(
             title=f"The guild picked {current_obelisk_pick}!",
             url="https://www.neopets.com/prehistoric/battleground/",
@@ -239,7 +241,8 @@ class SelectView(discord.ui.View):
             )
         embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
 
-        await interaction.send_message(f"<@&{int(obelisk_id)}>", embed=embedding)
+        await channel.send(f"<@&{int(obelisk_id)}>", embed=embedding)
+        await interaction.response.send_message(f"Pick set to **{current_obelisk_pick}**!", ephemeral=True)
 
 class ChangePickView(discord.ui.View):
     @discord.ui.button(label="Change pick", style=discord.ButtonStyle.primary)
@@ -323,6 +326,7 @@ async def help(command):
     \n* **ping**: It's a ping! You know, [A Ping](https://en.wikipedia.org/wiki/Ping_(networking_utility))
     \n* **mpic**: Links to Mystery Pic! Because why not.
     \n* **artgallery**: Links to the Neopets Art Gallery! (also .ag)
+    \n* **obelisk**: This one lets you share the obelisk guild pick.
     \n* Also, there may be a couple secrets (but it's a secret!).""",
     color=0xFA903E
     )
