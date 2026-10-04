@@ -216,12 +216,12 @@ class SelectView(discord.ui.View):
         min_values=1,
         max_values=1,
         options=[
-            discord.SelectOption(label="Awakened", description="Awakened"),
-            discord.SelectOption(label="Brutes", description="Brute Squad"),
-            discord.SelectOption(label="Order", description="Order of the Red Erisim"),
-            discord.SelectOption(label="Seekers", description="Seekers"),
-            discord.SelectOption(label="Sway", description="Sway"),
-            discord.SelectOption(label="Thieves", description="Thieves Guild")
+            discord.SelectOption(label="Awakened"),
+            discord.SelectOption(label="Brutes"),
+            discord.SelectOption(label="Order"),
+            discord.SelectOption(label="Seekers"),
+            discord.SelectOption(label="Sway"),
+            discord.SelectOption(label="Thieves")
         ]
     )
     async def select_callback(self, interaction, select):
@@ -239,7 +239,7 @@ class SelectView(discord.ui.View):
             )
         embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
 
-        await interaction.response.send_message(f"<@&{int(obelisk_id)}>", embed=embedding)
+        await interaction.send_message(f"<@&{int(obelisk_id)}>", embed=embedding)
 
 class ChangePickView(discord.ui.View):
     @discord.ui.button(label="Change pick", style=discord.ButtonStyle.primary)
@@ -251,7 +251,7 @@ async def obelisk_pick(ctx):
     if current_obelisk_pick:
         await ctx.send(f"The guild's pick is **{current_obelisk_pick}**, picked by <@{current_obelisk_picker}>.", view=ChangePickView())
     else:
-        await ctx.send("Who did the guild pick?", view=SelectView())
+        await ctx.send("There is no pick yet!", view=ChangePickView())
 
 @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=pst))
 async def obelisk_messages():
@@ -264,7 +264,7 @@ async def obelisk_messages():
         embedding = discord.Embed(
         title="Time to pick a faction!!", 
         url="https://www.neopets.com/prehistoric/battleground/", 
-        description=f"Do we even know who the pick is <:Clueless:1534993720372625539>",
+        description=f"Call .obelisk to share the guild pick",
         color=0xf3f1d4
         )
         embedding.set_image(url="https://images.neopets.com/items/weap_shard_obelisk.gif")
